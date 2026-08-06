@@ -1,0 +1,25 @@
+{
+  "name": "frontend",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "browsersList": [
+    "defaults"
+  ],
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "astro": "^7.1.6",
+    "astro-icon": "^1.1.5",
+    "postcss": "^8.5.25"
+  },
+  "devDependencies": {
+    "postcss-preset-env": "^11.3.2"
+  }
+}
