@@ -12,15 +12,29 @@ interface Props {
     };
     isFilled?: boolean;
     borderVisible?: boolean;
-    classes?: string; //class is a JS keyword
+    classes?: string; 
 }
 
-const { text, href, style, icon, isFilled = true, borderVisible = false, classes, ...rest} = Astro.props;
+const { 
+    text, 
+    href, 
+    style, 
+    icon, 
+    isFilled = true, 
+    borderVisible = false, 
+    classes, 
+    ...rest
+} = Astro.props;
 ---
 
 <a 
     href={href} 
-    class:list={["link", classes, style, {filled: isFilled, bordered: borderVisible}]}
+    class:list={[
+        "link", 
+        classes, 
+        style, 
+        {filled: isFilled, bordered: borderVisible}
+    ]}
     {...rest}
 >
     {
