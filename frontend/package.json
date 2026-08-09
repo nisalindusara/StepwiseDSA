@@ -20,6 +20,7 @@
     "postcss": "^8.5.25"
   },
   "devDependencies": {
+    "@iconify-json/tabler": "^1.2.38",
     "postcss-preset-env": "^11.3.2"
   }
 }
