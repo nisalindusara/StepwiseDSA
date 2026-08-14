@@ -1,0 +1,18 @@
+---
+// utils import
+import {slugify, formatDate} from "../js/utils";
+
+const { category, title, author, date } = Astro.props;
+---
+
+<header>
+        <div class="container">
+            <small>
+                <a href={`/category/${slugify(category)}`} class="badge">
+                    {category}
+                </a>
+            </small>
+            <h1 class="h2">{title}</h1>
+            <p>by <a href={`/author/${slugify(author)}`}>{author}</a> . {formatDate(date)}</p>
+        </div>
+    </header>
