@@ -1,0 +1,21 @@
+---
+// styles import
+import "../styles/PostCardAstroComponent.css"
+
+// utils import
+import { formatDate } from "../js/utils"
+
+const {frontmatter, url} = Astro.props
+---
+
+<p>
+  <div class="article-card">
+    <div class="article-top">
+      <div class="article-title"><a href={url}>{frontmatter.title}</a></div>
+      <div class="article-date">{formatDate(frontmatter.date)}</div>
+    </div>
+    <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+    <div class="article-divider"></div>
+    <div class="article-views">1 view</div>
+  </div>
+</p>

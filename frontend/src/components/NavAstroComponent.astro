@@ -1,0 +1,24 @@
+---
+// styles imports
+import "../styles/NavAstroComponent.css"
+
+// data imports
+import navData from "../data/navData";
+---
+
+<header>
+    <a href="/" class="brand">
+      <img src="/favicon.svg" width="30px" height="30px" alt="Brand logo">
+    </a>
+    <nav>
+      <ul>
+        {navData.map(item => (
+                <a href={item.path}>{item.name}</a>
+            ))}
+      </ul>
+    </nav>
+</header>
+
+<script>
+    import "../js/nav.js"
+</script>

@@ -1,28 +1,26 @@
 ---
-
 // component imports
 import MainLayout from "../../layouts/MainLayout.astro";
+import PostCard from "../../components/PostCard.astro";
+import styles from "virtual:astro:image-styles.css";
+
+const allPosts = Object.values(import.meta.glob("./*.md", { eager: true }));
+
+styles
 ---
 
 <MainLayout title="My Blog">
-	<ul>
-        <li>
-            <a href="./blog/post-1/">Post 1</a>
-        </li>
-        <li>
-            <a href="./blog/post-2/">Post 2</a>
-        </li>
-        <li>
-            <a href="./blog/post-3/">Post 3</a>
-        </li>
-        <li>
-            <a href="./blog/post-4/">Post 4</a>
-        </li>
-        <li>
-            <a href="./blog/post-5/">Post 5</a>
-        </li>
-        <li>
-            <a href="./blog/post-6/">Post 6</a>
-        </li>
-    </ul>
+    <main>
+        {
+            allPosts.map((post:any) => <PostCard frontmatter={post.frontmatter} url={post.url}/>)
+        }
+    </main>
 </MainLayout>
+
+<style>
+    main {
+    max-width: 1000px;
+    margin: 20px auto 0;
+    padding: 0 24px 40px;
+  }
+</style>

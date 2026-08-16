@@ -2,7 +2,6 @@
 
 // component imports
 import MainLayout from "../layouts/MainLayout.astro";
-import Link from "../components/Link.astro";
 ---
 
 <MainLayout title="Page Not Found">
@@ -15,14 +14,5 @@ import Link from "../components/Link.astro";
     >
         <div class="h1">Welp, this is awkward!</div>
         <p>We seem to have misplaced something</p>
-        <Link
-            href="/"
-            style="secondary"
-            text="Go Home"
-            icon={{
-                name: "tabler:home",
-                side: "right",
-            }}
-        />
     </div>
 </MainLayout>
