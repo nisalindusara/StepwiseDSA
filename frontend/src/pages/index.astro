@@ -6,7 +6,17 @@ import PostCard from "../components/PostCard.astro";
 // styles imports
 import "../styles/index.css"
 
-const allPosts = Object.values(import.meta.glob("./blog/*.md", { eager: true }));
+// util imports
+import { formatBlogPosts } from "../js/utils";
+
+// 1. Fetch ALL posts from your markdown folder on the server
+const rawPosts = Object.values(import.meta.glob("./blog/*.md", { eager: true }));
+const formattedAllPosts = formatBlogPosts(rawPosts, {
+	filterOutDrafts: true,
+	filterOutFuturePosts: true,
+	sortByDate: true
+	});
+const initialFivePosts = formattedAllPosts.slice(0, 5)
 ---
 
 <MainLayout title="My Blog">
@@ -18,17 +28,69 @@ const allPosts = Object.values(import.meta.glob("./blog/*.md", { eager: true }))
   		<p>Clear, step-by-step solutions to LeetCode, Codeforces &amp; GeeksforGeeks problems.</p>
   		<div class="search-pill">
     		<input type="text" placeholder="Search for problems or topics...">
-    		<div class="category-select">All Categories <span class="caret">&#9662;</span></div>
+    		<select class="category-select" id="categoryFilter">
+				<option value="all">All Categories</option>
+      			<option value="array">Array</option>
+      			<option value="hashmap">Hash Map</option>
+      			<option value="recursion">Recursion</option>
+			</select>
     		<div class="search-btn">
       			<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
     		</div>
   		</div>
 	</section>
 	<main>
-		<div>
+		<div id="post-list" data-all-posts={JSON.stringify(formattedAllPosts)}>
         	{
-            	allPosts.map((post:any) => <PostCard frontmatter={post.frontmatter} url={post.url}/>)
+            	initialFivePosts.map((post:any) => <PostCard frontmatter={post.frontmatter} url={post.url}/>)
     		}
 		</div>
     </main>
 </MainLayout>
+
+<script>
+	import { filterPostsByCategory, formatDate } from "../js/utils";
+
+	const postList = document.getElementById('post-list')!;
+	const categoryFilter = document.getElementById('categoryFilter') as HTMLSelectElement;
+
+	// Extract the complete repository of posts into client memory
+	const allPosts = postList?.dataset.allPosts ? JSON.parse(postList.dataset.allPosts) : [];
+	let filteredPosts = [...allPosts];
+
+	function handleChangeCategory(category:string) {
+		postList.innerHTML = "";
+		
+		if (category === "all") {
+			filteredPosts = allPosts.slice(0, 5);
+		} else {
+			filteredPosts = filterPostsByCategory(allPosts, category);
+		}
+
+		if (filteredPosts && filteredPosts.length > 0) {
+			filteredPosts.forEach(post => {
+				const postCard = document.createElement('div');
+				postCard.className = 'article-card'; 
+			
+				// Build internal card layout string dynamically
+				postCard.innerHTML = `
+    					<div class="article-top">
+      						<div class="article-title"><a href=${post.url}>${post.frontmatter.title}</a></div>
+      						<div class="article-date">${formatDate(post.frontmatter.date)}</div>
+    					</div>
+    					<div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+    					<div class="article-divider"></div>
+    					<div class="article-views">1 view</div>
+				`;
+				postList.appendChild(postCard);
+			}) 
+		} else {
+			postList.innerHTML = `<p class="no-posts">No posts found in this category.</p>`;
+		}
+	}
+
+	categoryFilter?.addEventListener('change', (e) => {
+		const target = e.target as HTMLSelectElement;
+		handleChangeCategory(target.value);
+	});
+</script>

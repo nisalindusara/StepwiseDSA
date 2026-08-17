@@ -59,6 +59,7 @@
   color: #555;
   font-size: 14px;
   white-space: nowrap;
+  background: transparent;
 }
 
 .search-btn {

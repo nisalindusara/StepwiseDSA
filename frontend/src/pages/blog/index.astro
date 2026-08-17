@@ -2,17 +2,18 @@
 // component imports
 import MainLayout from "../../layouts/MainLayout.astro";
 import PostCard from "../../components/PostCard.astro";
-import styles from "virtual:astro:image-styles.css";
+
+// utils imports
+import { formatBlogPosts } from "../../js/utils";
 
 const allPosts = Object.values(import.meta.glob("./*.md", { eager: true }));
-
-styles
+const formattedPosts = formatBlogPosts(allPosts);
 ---
 
 <MainLayout title="My Blog">
     <main>
         {
-            allPosts.map((post:any) => <PostCard frontmatter={post.frontmatter} url={post.url}/>)
+            formattedPosts.map((post:any) => <PostCard frontmatter={post.frontmatter} url={post.url}/>)
         }
     </main>
 </MainLayout>
