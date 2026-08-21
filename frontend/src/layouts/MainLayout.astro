@@ -18,7 +18,9 @@ const {
 	<MainHead {title} {description}/>
 	<body>
 		<NavAstroComponent />
-		<slot></slot>
+		<div class="main">
+			<slot></slot>
+		</div>
 		<Footer />
 	</body>
 </html>

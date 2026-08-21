@@ -1,0 +1,53 @@
+---
+// utils import
+import { filterPostsByCategory, formatBlogPosts, slugify } from '../../js/utils';
+
+// Layout import
+import MainLayout from '../../layouts/MainLayout.astro';
+
+// component import
+import PostCard from '../../components/PostCard.astro';
+
+export async function getStaticPaths() {
+    const allPosts =  Object.values(import.meta.glob("./../blog/*.md", { eager: true }));
+    const formattedPosts = formatBlogPosts(allPosts);
+
+    const categories = [
+        ...new Set(formattedPosts.map((post:any) => post.frontmatter.category).flat()),
+    ];
+
+    return categories.map((category) => {
+        const categoryPosts = formattedPosts.filter((post:any) => post.frontmatter.category === category);
+        return {
+            params: {category: slugify(category)},
+            props: {
+                categoryName: category,
+                posts: categoryPosts,
+            }
+        }
+    })
+}
+
+const { posts, categoryName } = Astro.props;
+---
+<MainLayout title={categoryName}>
+    <main>
+		<div id="post-list">
+        	{
+            	posts.map((post:any) => <PostCard frontmatter={post.frontmatter} url={post.url}/>)
+    		}
+		</div>
+    </main>
+</MainLayout>
+
+<style>
+    main {
+        width: 100vw;
+    }
+
+    main > div {
+        max-width: 1000px;
+        margin: auto;
+        padding-top: 20px;
+    }
+</style>
