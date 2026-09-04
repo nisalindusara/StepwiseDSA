@@ -1,0 +1,206 @@
+---
+layout: "../../layouts/BlogPostLayout.astro"
+title: Sudoku Solver
+date: 2022-11-20
+author: Darnell McClure
+description: Have you ever wondered what the most important items of life are? Well, wonder no more!
+draft: false
+category: array
+---
+
+import Collapsible from "../../components/Collapsible.astro";
+
+<Collapsible title="Introduction to the problem">
+
+If you are studying computer science or grinding through coding interviews, you will inevitably run into Sudoku. It isn’t just a newspaper game; it is the poster child for a classic computer science concept called a Constraint Satisfaction Problem.
+
+If you look up the fastest C++ solutions for a Sudoku solver, you will likely find code that executes in a blazing 3 milliseconds. However, those solutions rely on heavy bitwise manipulation, shifting binary numbers at the hardware level. While incredibly fast, it is not the kind of solution you need to learn the problem nor it would be the solution you can come up with a beginner.
+
+The goal of this article is not to write the fastest solve but to write a solver you can actually read, understand, and explain to someone else. We are going to demystify Recursive Backtracking by looking at the two rules of clean backtracking, and the crucial "aha!" moment that makes the whole algorithm click.
+
+</Collapsible>
+
+<Collapsible title="The Concept: Backtracking">
+
+This article assumes the reader has a basic understanding of the concept bactraking. We place a number on the Sudoku board, confidently move forward to the next cell, and if the puzzle eventually breaks, we step back and erase our mistake.
+To write a Sudoku solver that doesn't collapse on itself, we need to separate out concerns.
+
+<Collapsible title="The Two Golden Rules of Clean Backtracking">
+
+Job 1: Navigation.
+The algorithm needs a reliable way to move forward and backward across the 81 cells.
+
+Job 2: Validation.
+The algorithm needs a strict, isolated way to check if placing a '5' in a specific spot violates the rules of Sudoku.
+
+</Collapsible>
+
+</Collapsible>
+
+<Collapsible title="Code">
+
+```cpp
+class Solution
+{
+    public:
+        bool validPlacement(vector<vector<char>>& board, int index1, int index2, int val)
+        {
+```
+
+<Collapsible title="Base Case">
+
+```cpp
+if (index1 > 8) {
+    return true;
+}
+```
+
+</Collapsible>
+
+<Collapsible title="Job 1: Navigation">
+int next1 = (index2 == 8) ? index1 + 1 : index1;
+        int next2 = (index2 == 8) ? 0 : index2 + 1;
+</Collapsible>
+<Collapsible title="Skip pre-filled cells immediately">
+```
+if (board[index1][index2] != '.') 
+{
+    return validPlacement(board, next1, next2, 1);
+}
+```
+</Collapsible>
+<Collapsible title="Try numbers 1 through 9 for the current empty cell">
+```
+while (val <= 9) 
+{
+    board[index1][index2] = val + '0'; // Temporarily place the number
+    bool isValid = true;
+
+    // --- VALIDATION LOGIC ---
+    for (int i = 0; i < 9; i++) {
+        if (board[index1][i] == (val + '0') && i != index2) isValid = false;
+    }
+
+    // Check the column
+    for (int i = 0; i < 9; i++) {
+        if (board[i][index2] == (val + '0') && i != index1) isValid = false;
+    }
+
+    // Check the 3x3 sub-grid
+    int i = (index1 <= 2) ? 0 : (index1 <= 5) ? 3 : 6;
+    int j = (index2 <= 2) ? 0 : (index2 <= 5) ? 3 : 6;
+
+    for (int k = i; k < i + 3; k++) {
+        for (int l = j; l < j + 3; l++) {
+            if (board[k][l] == (val + '0') && k != index1 && l != index2) {
+                isValid = false;
+            }
+        }
+    }
+    // ------------------------
+
+    // If the placement is valid, recursively call the next cell
+    if (isValid) {
+        // If the future placements succeed, cascade the 'true' back up
+        if (validPlacement(board, next1, next2, 1)) {
+            return true;
+        }
+    }
+
+    // THE CRUCIAL STEP: If the placement was invalid, OR a future path failed,
+    // we must reset the cell before trying the next value.
+    board[index1][index2] = '.';
+    val++;
+
+}
+
+```
+</Collapsible>
+<Collapsible title="Return">
+return false;
+</Collapsible>
+
+```
+
+}
+
+    void solveSudoku(vector<vector<char>>& board) {
+        validPlacement(board, 0, 0, 1);
+    }
+
+};
+
+```
+</Collapsible>
+
+<Collapsible title="The Coordinate Trap: Why We Need next1 and next2">
+
+If you look at the navigation code, you'll notice we don't just update index1 and index2. Instead, we create two brand new variables: next1 and next2.
+
+```
+
+int next1 = (index2 == 8) ? index1 + 1 : index1;
+int next2 = (index2 == 8) ? 0 : index2 + 1;
+
+```
+
+Why not just increment index1 and index2 directly to save memory?
+Because of how backtracking erases the board!
+
+If we modify our current coordinates to point to the next cell, and then our algorithm hits a dead end later on, our backtracking step (board[index1][index2] = '.') will end up erasing pre-filled cells too. Creating next variables preserves the coordinates of the cell we are currently working on, guaranteeing that if we need to clean up a mistake, we are wiping the correct spot.
+
+</Collapsible>
+
+<Collapsible title="Protecting the Pre-filled Cells">
+
+This two-index system also perfectly protects the clues given to us at the start of the puzzle.
+
+```
+
+if (board[index1][index2] != '.') {
+return validPlacement(board, next1, next2, 1);
+}
+
+```
+
+Because we calculate next1 and next2 at the very beginning of the function, we can check if a cell already has a number in it. If it does (like a starting '7'), we immediately call the function for the next cell. Because it skips the while loop entirely, a pre-filled cell will never hit the line of code that resets a cell to '.', keeping the original puzzle completely safe from accidental erasure.
+
+</Collapsible>
+
+<Collapsible title="The 'Aha!' Moment: Why We Must Erase">
+
+If you look closely at the code above, you will see this line executing right before we increment the value:
+
+board[index1][index2] = '.';
+Understanding why that line is there is the key to understanding all of backtracking. There is a massive difference between an Immediate Failure and a Future Dead End.
+
+The Immediate Failure: Imagine you are at a cell and you try to place a '1'. Your validation loops immediately see that there is already a '1' in that row. The placement is illegal right now, so the code rejects it.
+
+The Future Dead End: Now imagine you try to place a '2'. Your validation checks the row, column, and grid. It passes! The '2' is a legally valid move at this exact moment.
+
+So, you confidently move forward. The algorithm goes 10 steps deeper into the board, but suddenly gets stuck. It tries numbers 1 through 9 on a future cell, and none of them work. The puzzle has become impossible.
+
+Why did it break? Because that '2' you placed 10 steps ago was actually the wrong choice, even though it looked perfectly legal at the time.
+
+The algorithm needs to reverse its steps back to that cell and try a '3' instead. If you do not explicitly command the algorithm to erase the board (board[index1][index2] = '.'), that wrong '2' stays permanently glued to the board. As the algorithm retreats backward, it leaves a trail of "valid but wrong" numbers behind it, permanently polluting the puzzle.
+
+We erase the board because we must clean up our mistakes before we try a new path.
+
+</Collapsible>
+
+<Collapsible title="Conclusion & The Path to Optimization">
+
+The hardest part of recursive problem solving isn't the math; it is managing the state of your data. By explicitly defining how the algorithm steps forward (next1, next2), checking the rules clearly, and rigorously cleaning up the board when paths fail, the intimidating "recursive backtrack" becomes nothing more than an organized game of trial and error.
+
+</Collapsible>
+
+<Collapsible title="Where to go from here?">
+
+This solution is robust, safe, and highly educational. However, because it uses arrays and for loops to validate every single attempt, it is computationally heavy.
+
+Once you are entirely comfortable with the logic above, look into Bit Manipulation. Professional-grade solvers assign a binary integer to every row, column, and grid. Instead of using 27 loop iterations to check if a number is legal, they use a single hardware-level Bitwise AND operator (&) to check the board state instantly, dropping the execution time from hundreds of milliseconds down to just 3ms.
+
+But remember: you have to understand how the maze works before you can start sprinting through it.
+
+</Collapsible>
+```

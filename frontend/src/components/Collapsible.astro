@@ -1,0 +1,80 @@
+---
+// src/components/Collapsible.astro
+interface Props {
+  title: string;
+  open?: boolean;
+}
+const { title, open = false } = Astro.props;
+
+import '../styles/global.css';
+---
+<details class="card" open={open}>
+  <summary class="card-header">
+    <span class="chevron" aria-hidden="true">▸</span>
+    <span class="card-title">{title}</span>
+  </summary>
+  <div class="card-body">
+    <slot />
+  </div>
+</details>
+
+<style>
+  .card {
+    border: 1px solid var(--border, #e2e2e2);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--card-bg, #ffffff);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    transition: box-shadow 0.15s ease;
+  }
+  .card:hover {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  }
+  .card-header {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.85rem 1.1rem;
+    font-weight: 600;
+    user-select: none;
+  }
+  .card-header::-webkit-details-marker { display: none; }
+  .card-title {
+    flex: 1;
+  }
+  .chevron {
+    transition: transform 0.2s ease;
+    font-size: 0.8rem;
+    color: var(--muted, #888);
+    flex-shrink: 0;
+  }
+  details[open] > .card-header .chevron { transform: rotate(90deg); }
+  .card-body {
+    padding: 0 1.1rem 1.1rem;
+    line-height: 1.6;
+  }
+
+  /* Nested cards get a slightly recessed look so depth is visually clear */
+  .card :global(.card) {
+    background: var(--card-bg-nested, #fafafa);
+    box-shadow: none;
+    border-color: var(--border-nested, #ebebeb);
+  }
+  .card :global(.card) :global(.card) {
+    background: var(--card-bg-nested-2, #f2f2f2);
+  }
+
+  /* Space out slotted code blocks from card chrome and each other */
+  .card-body :global(pre) {
+    margin: 0.75rem 0;
+    border-radius: 8px;
+  }
+  .card-body :global(pre:first-child) {
+    margin-top: 0.9rem;
+  }
+  .card-body :global(pre:last-child) {
+    margin-bottom: 0;
+  }
+</style>

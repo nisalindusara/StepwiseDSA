@@ -1,19 +1,17 @@
 ---
-// component import
 import MainLayout from "./MainLayout.astro";
-import PostHeader from "./PostHeader.astro";
+import Collapsible from "../components/Collapsible.astro";
 
 const { frontmatter } = Astro.props;
 const { title, description, date, category, author } = frontmatter;
+
+export const components = { Collapsible };
 ---
-
 <MainLayout {title} {description}>
-    <PostHeader {title} {category} {author} {date}/>
-    <div class="post-content">
-        <div class="content">
-            <slot />
-        </div>
-        <div class="sidebar"></div>
+  <div class="post-content">
+    <div class="content">
+      <slot />
     </div>
+    <div class="sidebar"></div>
+  </div>
 </MainLayout>
-

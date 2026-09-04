@@ -15,6 +15,8 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/markdown-satteri": "^0.4.0",
+    "@astrojs/mdx": "^8.0.0",
     "astro": "^7.1.6",
     "astro-icon": "^1.1.5",
     "postcss": "^8.5.25"

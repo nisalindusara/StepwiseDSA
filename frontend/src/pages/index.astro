@@ -10,7 +10,7 @@ import "../styles/index.css"
 import { formatBlogPosts } from "../js/utils";
 
 // 1. Fetch ALL posts from your markdown folder on the server
-const rawPosts = Object.values(import.meta.glob("./blog/*.md", { eager: true }));
+const rawPosts = Object.values(import.meta.glob("./blog/*.mdx", { eager: true }));
 const formattedAllPosts = formatBlogPosts(rawPosts, {
 	filterOutDrafts: true,
 	filterOutFuturePosts: true,

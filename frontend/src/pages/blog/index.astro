@@ -6,7 +6,7 @@ import PostCard from "../../components/PostCard.astro";
 // utils imports
 import { formatBlogPosts } from "../../js/utils";
 
-const allPosts = Object.values(import.meta.glob("./*.md", { eager: true }));
+const allPosts = Object.values(import.meta.glob("./*.mdx", { eager: true }));
 const formattedPosts = formatBlogPosts(allPosts);
 ---
 
